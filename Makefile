@@ -20,7 +20,7 @@ INCLUDES  := -I$(SRC_DIR)
 # Linux
 # ------------------------------------------------------------
 ifeq ($(OS), Linux)
-    LDFLAGS := -lsfml-window -lsfml-system -lGL
+    LDFLAGS := -L/usr/local/lib -lsfml-window -lsfml-system -lGL
 endif
 
 # ------------------------------------------------------------
@@ -30,6 +30,7 @@ ifeq ($(OS), Darwin)
     SFML_DIR := /opt/homebrew/Cellar/sfml/3.0.1
     INCLUDES += -I$(SFML_DIR)/include
     LDFLAGS  := -L$(SFML_DIR)/lib \
+                -Wl,-rpath,$(SFML_DIR)/lib \
                 -lsfml-window -lsfml-system \
                 -framework OpenGL
 endif
