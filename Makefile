@@ -1,51 +1,79 @@
-# to compile and run in one command type:
-# make run
+# ------------------------------------------------------------
+# Build + run with:
+#   make
+#   make run
+# ------------------------------------------------------------
 
-# define which compiler to use
 CXX     := g++
-OUTPUT  := sfmlgame
+OUTPUT  := cnn_compute
 OS      := $(shell uname)
 SRC_DIR := ./src
+BIN_DIR := ./bin
 
-# linux compiler / linker flags
+# ------------------------------------------------------------
+# Common flags
+# ------------------------------------------------------------
+CXX_FLAGS := -O3 -std=c++23 -Wall -Wextra -Wno-unused-result
+INCLUDES  := -I$(SRC_DIR)
+
+# ------------------------------------------------------------
+# Linux
+# ------------------------------------------------------------
 ifeq ($(OS), Linux)
-    CXX_FLAGS := -O3 -std=c++23 -Wno-unused-result -Wno-deprecated-declarations
-    INCLUDES  := -I$(SRC_DIR) -I$(SRC_DIR)/imgui
-    LDFLAGS   := -L/usr/local/lib -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -lGL
+    LDFLAGS := -lsfml-window -lsfml-system -lGL
 endif
 
-# mac osx compiler / linker flags
+# ------------------------------------------------------------
+# macOS
+# ------------------------------------------------------------
 ifeq ($(OS), Darwin)
-    SFML_DIR  := /opt/homebrew/Cellar/sfml/3.0.1
-    CXX_FLAGS := -O3 -std=c++23 -Wno-unused-result -Wno-deprecated-declarations
-    INCLUDES  := -I$(SRC_DIR) -I$(SRC_DIR)/imgui -I$(SFML_DIR)/include
-    LDFLAGS   := -O3 -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -L$(SFML_DIR)/lib -framework OpenGL
+    SFML_DIR := /opt/homebrew/Cellar/sfml/3.0.1
+    INCLUDES += -I$(SFML_DIR)/include
+    LDFLAGS  := -L$(SFML_DIR)/lib \
+                -lsfml-window -lsfml-system \
+                -framework OpenGL
 endif
 
-# the source files for the ecs game engine
-SRC_FILES := $(wildcard $(SRC_DIR)/*.cpp $(SRC_DIR)/imgui/*.cpp) 
+# ------------------------------------------------------------
+# Sources
+# ------------------------------------------------------------
+SRC_FILES := $(wildcard $(SRC_DIR)/*.cpp)
 OBJ_FILES := $(SRC_FILES:.cpp=.o)
 
-# Include dependency files
 DEP_FILES := $(OBJ_FILES:.o=.d)
 -include $(DEP_FILES)
 
-# all of these targets will be made if you just type make
-all: $(OUTPUT)
+# ------------------------------------------------------------
+# Shaders
+# ------------------------------------------------------------
+SHADER_SRC := ./shaders
+SHADER_DST := ./bin/shaders
 
-# define the main executable requirements / command
-$(OUTPUT): $(OBJ_FILES) Makefile
-	$(CXX) $(OBJ_FILES) $(LDFLAGS) -o ./bin/$@
+# ------------------------------------------------------------
+# Targets
+# ------------------------------------------------------------
+all: $(BIN_DIR)/$(OUTPUT)
 
-# specifies how the object files are compiled from cpp files
+$(BIN_DIR):
+	mkdir -p $(BIN_DIR)
+
+$(SHADER_DST):
+	mkdir -p $(SHADER_DST)
+
+copy_shaders: | $(SHADER_DST)
+	cp -f $(SHADER_SRC)/*.comp $(SHADER_DST) 2>/dev/null || true
+
+$(BIN_DIR)/$(OUTPUT): $(OBJ_FILES) copy_shaders | $(BIN_DIR)
+	$(CXX) $(OBJ_FILES) $(LDFLAGS) -o $@
+
 %.o: %.cpp
 	$(CXX) -MMD -MP -c $(CXX_FLAGS) $(INCLUDES) $< -o $@
 
-# typing 'make clean' will remove all intermediate build files
 clean:
-	rm -f $(OBJ_FILES) $(DEP_FILES) ./bin/$(OUTPUT)
+	rm -f $(OBJ_FILES) $(DEP_FILES) $(BIN_DIR)/$(OUTPUT)
+	rm -rf $(SHADER_DST)
 
-# typing 'make run' will compile and run the program
-run: $(OUTPUT)
-	cd bin && ./$(OUTPUT) && cd ..
+run: $(BIN_DIR)/$(OUTPUT)
+	cd $(BIN_DIR) && ./$(OUTPUT)
 
+.PHONY: all clean run copy_shaders
