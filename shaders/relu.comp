@@ -1,0 +1,51 @@
+#version 430
+#include "SSBO_LAYOUTS_GLSL"
+
+layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+
+// Ping-pong buffer for activations (packed int8)
+layout(std430, binding = 1) buffer Activations {
+    int activations[];
+};
+
+int load_i8(int idx)
+{
+    int word = activations[idx >> 2];
+    int shift = (idx & 3) * 8;
+    int v = (word >> shift) & 0xFF;
+    return (v << 24) >> 24; // sign extend
+}
+
+void store_i8(int idx, int v)
+{
+    int word_idx = idx >> 2;
+    int shift = (idx & 3) * 8;
+
+    int mask = ~(0xFF << shift);
+    int word = activations[word_idx];
+    word = (word & mask) | ((v & 0xFF) << shift);
+    activations[word_idx] = word;
+}
+
+// Uniforms
+uniform int num_channels;
+uniform int time_length;
+uniform int input_offset;   // int8 index
+uniform int output_offset;  // int8 index (can equal input_offset)
+
+void main()
+{
+    uint c = gl_GlobalInvocationID.y;
+    uint t = gl_GlobalInvocationID.x;
+
+    if (c >= uint(num_channels) || t >= uint(time_length))
+        return;
+
+    int idx_in  = input_offset  + int(c) * time_length + int(t);
+    int idx_out = output_offset + int(c) * time_length + int(t);
+
+    int x = load_i8(idx_in);
+    int y = max(x, 0);
+
+    store_i8(idx_out, y);
+}

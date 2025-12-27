@@ -13,12 +13,15 @@ layout(std430, binding = 1) buffer Activations {
     int activations[];
 };
 
-int load_i8_from(int buffer[], int idx)
+// ----------------------------------------
+// int8 helpers (packed into int words)
+// ----------------------------------------
+int load_i8(int idx)
 {
-    int word = buffer[idx >> 2];
+    int word = activations[idx >> 2];
     int shift = (idx & 3) * 8;
     int v = (word >> shift) & 0xFF;
-    return (v << 24) >> 24;
+    return (v << 24) >> 24; // sign extend
 }
 
 void store_i8(int idx, int v)
@@ -32,43 +35,43 @@ void store_i8(int idx, int v)
     activations[word_idx] = word;
 }
 
+// ----------------------------------------
 // Uniforms
+// ----------------------------------------
 uniform int time_length;      // e.g. 128
-uniform int num_channels;     // e.g. 13
-uniform int kernel_size;      // e.g. 3
+uniform int in_channels;      // e.g. 16 (physical)
+uniform int out_channels;     // e.g. 32
 uniform int shift;            // right shift after accumulation
 uniform int input_offset;     // offset into activations
 uniform int output_offset;    // offset into activations
 uniform int weight_offset;    // offset into params
 
-void main() {
-    uint c = gl_GlobalInvocationID.y;
-    uint t = gl_GlobalInvocationID.x;
+void main()
+{
+    uint oc = gl_GlobalInvocationID.y;
+    uint t  = gl_GlobalInvocationID.x;
 
-    if (c >= uint(num_channels) || t >= uint(time_length))
+    if (oc >= uint(out_channels) || t >= uint(time_length))
         return;
 
     int acc = 0;
-    int radius = kernel_size >> 1;
 
-    int base_in  = input_offset  + int(c) * time_length;
-    int base_out = output_offset + int(c) * time_length;
-    int base_w   = weight_offset + int(c) * kernel_size;
+    int base_in  = input_offset  + int(t);
+    int base_out = output_offset + int(oc) * time_length + int(t);
+    int base_w   = weight_offset + int(oc) * in_channels;
 
-    for (int k = 0; k < kernel_size; ++k) {
-        int ti = int(t) + k - radius;
-        if (ti >= 0 && ti < time_length) {
-            int x = load_i8_from(activations, base_in + ti);
-            int w = load_i8_from(params, base_w + k);
-            acc += x * w;
-        }
+    for (int ic = 0; ic < in_channels; ++ic)
+    {
+        int x = load_i8(base_in + ic * time_length);
+        int w = load_i8(base_w + ic);
+        acc += x * w;
     }
 
-    // Scale down
+    // Normalize
     acc >>= shift;
 
-    // Optional saturation to int8
+    // Saturate to int8
     acc = clamp(acc, -128, 127);
 
-    store_i8(base_out + int(t), acc);
+    store_i8(base_out, acc);
 }
