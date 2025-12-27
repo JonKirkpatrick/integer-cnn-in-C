@@ -75,7 +75,7 @@ The intent is to explore whether this style of training is:
 - stable,
 - and useful for specific hardware-constrained domains.
 
-Results — positive or negative — are part of the goal.
+Results, positive or negative, are part of the goal.
 
 ---
 
