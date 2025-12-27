@@ -48,7 +48,7 @@ numerical constraints.
 
 - **Language:** C++ (C++23)
 - **Execution:** OpenGL compute shaders (GLSL 4.3+)
-- **Frontend:** SFML (for OpenGL context and optional visualization)
+- **Frontend:** SFML 3.0.2 (for OpenGL context and optional visualization)
 - **Numerics:** Integer-only (no floating point in model execution)
 - **Target use case:** 1D sensor time-series data with separable convolutions
 

@@ -13,7 +13,7 @@
  * is intended to hold the data tensors and labels for a machine learning task.
  * 
  * It can be compiled using:
- * g++ -std=c++23 ./src/inspect_dataet.cpp -o bin/inspect_dataset
+ * g++ -std=c++23 ./src/inspect_dataset.cpp -o bin/inspect_dataset
  * and run as:
  * ./bin/inspect_dataset <dataset.bin>
  */

@@ -1,0 +1,59 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-c",
+      "-O3",
+      "-std=c++23",
+      "-Wall",
+      "-Wextra",
+      "-Wno-unused-result",
+      "-Isrc",
+      "-Iexternal/glad/include",
+      "-o",
+      "bin/cnn_compute",
+      "src/main.cpp"
+    ],
+    "directory": "/home/johnny/WD_Raid/MUN/Integer_ML_Research/integer-cnn-in-C",
+    "file": "/home/johnny/WD_Raid/MUN/Integer_ML_Research/integer-cnn-in-C/src/main.cpp",
+    "output": "/home/johnny/WD_Raid/MUN/Integer_ML_Research/integer-cnn-in-C/bin/cnn_compute"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-c",
+      "-O3",
+      "-std=c++23",
+      "-Wall",
+      "-Wextra",
+      "-Wno-unused-result",
+      "-Isrc",
+      "-Iexternal/glad/include",
+      "-o",
+      "bin/cnn_compute",
+      "external/glad/src/gl.c"
+    ],
+    "directory": "/home/johnny/WD_Raid/MUN/Integer_ML_Research/integer-cnn-in-C",
+    "file": "/home/johnny/WD_Raid/MUN/Integer_ML_Research/integer-cnn-in-C/external/glad/src/gl.c",
+    "output": "/home/johnny/WD_Raid/MUN/Integer_ML_Research/integer-cnn-in-C/bin/cnn_compute"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-c",
+      "-O3",
+      "-std=c++23",
+      "-Wall",
+      "-Wextra",
+      "-Wno-unused-result",
+      "-Isrc",
+      "-Iexternal/glad/include",
+      "-o",
+      "bin/inspect_dataset",
+      "tools/inspect_dataset.cpp"
+    ],
+    "directory": "/home/johnny/WD_Raid/MUN/Integer_ML_Research/integer-cnn-in-C",
+    "file": "/home/johnny/WD_Raid/MUN/Integer_ML_Research/integer-cnn-in-C/tools/inspect_dataset.cpp",
+    "output": "/home/johnny/WD_Raid/MUN/Integer_ML_Research/integer-cnn-in-C/bin/inspect_dataset"
+  }
+]

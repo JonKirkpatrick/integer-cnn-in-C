@@ -1,3 +1,4 @@
+#include <memory.h>
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
 
