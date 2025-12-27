@@ -25,7 +25,7 @@ sf::Window createWindow(bool fullscreen)
         ? sf::State::Fullscreen
         : sf::State::Windowed;
 
-    sf::Window window(mode, "Integer CNN Compute", style, state, settings);
+    sf::Window window(mode, "Ouroboros", style, state, settings);
     window.setVerticalSyncEnabled(false);
 
     return window;
