@@ -1,0 +1,1 @@
+I have no idea if the initial random distribution of weights are going to be critical to the success of integer training, so I have included a module containing a few different schemes to make experimental changes easier to implement.
