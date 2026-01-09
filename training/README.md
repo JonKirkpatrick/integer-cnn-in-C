@@ -1,0 +1,1 @@
+This is the rough and ready training loop for the integer learning experiment.  While it uses PyTorch, it intentionally ignores autograd in order to expose as much of the inner workings as possible, at the expense of efficiency.
