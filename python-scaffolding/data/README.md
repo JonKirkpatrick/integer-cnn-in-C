@@ -1,1 +1,1 @@
-Delete after adding files.
+The included dataloader module is intended for use with int8_dataset.npz.  Owing to the size of the dataset, it is not included in this repository.  Please email jkirkpatrick@mun.ca for a copy if required.
